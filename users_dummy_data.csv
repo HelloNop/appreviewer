@@ -1,0 +1,11 @@
+name,email,phone,google_scholars,scopus,affiliation,department,country
+Dr. Ahmad Santoso,ahmad.santoso@university.ac.id,+62812345678,https://scholar.google.com/citations?user=abc123,https://www.scopus.com/authid/detail.uri?authorId=123456,Universitas Indonesia,Computer Science,Indonesia,,
+Prof. Sarah Johnson,sarah.johnson@mit.edu,+1234567890,https://scholar.google.com/citations?user=def456,https://www.scopus.com/authid/detail.uri?authorId=789012,Massachusetts Institute of Technology,Electrical Engineering,United States,,
+Dr. Maria Garcia,maria.garcia@upm.es,+34987654321,https://scholar.google.com/citations?user=ghi789,https://www.scopus.com/authid/detail.uri?authorId=345678,Universidad Politécnica de Madrid,Mechanical Engineering,Spain,,
+Prof. Hiroshi Tanaka,hiroshi.tanaka@tokyo.ac.jp,+81901234567,https://scholar.google.com/citations?user=jkl012,https://www.scopus.com/authid/detail.uri?authorId=901234,University of Tokyo,Physics,Japan,,
+Dr. Emma Wilson,emma.wilson@oxford.ac.uk,+44207123456,https://scholar.google.com/citations?user=mno345,https://www.scopus.com/authid/detail.uri?authorId=567890,University of Oxford,Mathematics,United Kingdom,,
+Prof. Jean Dupont,jean.dupont@sorbonne.fr,+33145678901,https://scholar.google.com/citations?user=pqr678,https://www.scopus.com/authid/detail.uri?authorId=234567,Sorbonne University,Chemistry,France,,
+Dr. Raj Patel,raj.patel@iit.ac.in,+919876543210,https://scholar.google.com/citations?user=stu901,https://www.scopus.com/authid/detail.uri?authorId=890123,Indian Institute of Technology,Software Engineering,India,,
+Prof. Klaus Mueller,klaus.mueller@tum.de,+4989123456789,https://scholar.google.com/citations?user=vwx234,https://www.scopus.com/authid/detail.uri?authorId=456789,Technical University of Munich,Bioengineering,Germany,,
+Dr. Lisa Chen,lisa.chen@ntu.edu.sg,+6591234567,https://scholar.google.com/citations?user=yza567,https://www.scopus.com/authid/detail.uri?authorId=012345,Nanyang Technological University,Data Science,Singapore,,
+Prof. Roberto Silva,roberto.silva@usp.br,+5511987654321,https://scholar.google.com/citations?user=bcd890,https://www.scopus.com/authid/detail.uri?authorId=678901,University of São Paulo,Environmental Engineering,Brazil,,
