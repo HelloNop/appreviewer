@@ -22,6 +22,8 @@ class UserImporter extends Importer
             ImportColumn::make('email')
                 ->requiredMapping()
                 ->rules(['required', 'email', 'max:255']),
+            ImportColumn::make('nohp')
+                ->rules(['max:255']),
             ImportColumn::make('google_scholars')
                 ->rules(['max:255']),
             ImportColumn::make('scopus')
@@ -79,15 +81,15 @@ protected function afterFill(): void
         // atau pakai $this->record->assignRole($roles) → tambah tanpa hapus role lama
     }
 
-    // Kirim email welcome dengan informasi login menggunakan job
-    $emailData = [
-        'name' => $this->record->name,
-        'email' => $this->record->email,
-        'password' => $plainPassword,
-    ];
+    // // Kirim email welcome dengan informasi login menggunakan job
+    // $emailData = [
+    //     'name' => $this->record->name,
+    //     'email' => $this->record->email,
+    //     'password' => $plainPassword,
+    // ];
     
-    // Dispatch job untuk mengirim email welcome
-    SendWelcomeEmail::dispatch($emailData);
+    // // Dispatch job untuk mengirim email welcome
+    // SendWelcomeEmail::dispatch($emailData);
 }
 
     protected function afterSave(): void
