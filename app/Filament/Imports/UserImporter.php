@@ -22,7 +22,7 @@ class UserImporter extends Importer
             ImportColumn::make('email')
                 ->requiredMapping()
                 ->rules(['required', 'email', 'max:255']),
-            ImportColumn::make('nohp')
+            ImportColumn::make('phone')
                 ->rules(['max:255']),
             ImportColumn::make('google_scholars')
                 ->rules(['max:255']),
