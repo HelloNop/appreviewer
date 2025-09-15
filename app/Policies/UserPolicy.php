@@ -64,4 +64,9 @@ class UserPolicy
         return $authUser->can('Reorder:User');
     }
 
+    public function action(AuthUser $authUser): bool
+    {
+        return $authUser->can('Action:User');
+    }
+
 }

@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
-use BaconQrCode\Renderer\RendererStyle\Fill;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
@@ -10,6 +9,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Support\Enums\Size;
 use Deldius\UserField\UserColumn;
+use Filament\Actions\DeleteAction;
 use Filament\Tables\Columns\Column;
 use Illuminate\Foundation\Auth\User;
 use Filament\Actions\BulkActionGroup;
@@ -19,6 +19,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ViewField;
 use Filament\Notifications\Notification;
+use BaconQrCode\Renderer\RendererStyle\Fill;
 use Illuminate\Database\Eloquent\Collection;
 
 class UsersTable
@@ -70,6 +71,7 @@ class UsersTable
                     ->modalWidth('xl')
                     ->icon('heroicon-o-pencil'),
                 Action::make('Cut')
+                    ->authorize('action', User::class)
                     ->label('Cut Point')
                     ->button()
                     ->modalWidth('xl')
@@ -108,6 +110,12 @@ class UsersTable
                     })
             ])
             ->toolbarActions([
+                    BulkAction::make('delete')
+                        ->icon('heroicon-o-trash')
+                        ->label('Delete')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records) => $records->each->delete()),
 
                     BulkAction::make('active')
                         ->icon('heroicon-o-check-circle')

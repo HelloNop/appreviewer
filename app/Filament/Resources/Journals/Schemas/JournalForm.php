@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Journals\Schemas;
 
-
+use App\Models\FocusAndScope;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Grid;
@@ -10,6 +10,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater\TableColumn;
 
 class JournalForm
@@ -54,10 +55,11 @@ class JournalForm
                             TableColumn::make('Editor Name'),
                             TableColumn::make('Position'),
                         ])
+
                         ->schema([
                             Select::make('user_id')
                                 ->label('User')
-                                ->options(\App\Models\User::role('Editor')->pluck('name', 'id'))
+                                ->options(\App\Models\User::role('Editor')->pluck('name', 'id', ))
                                 ->searchable()
                                 ->preload()
                                 ->required(),
@@ -72,6 +74,7 @@ class JournalForm
                                     'Team Editor' => 'Team Editor',
                                 ])
                                 ->required(),
+                            Hidden::make('status')->default('accepted'),
                         ])
                     ]),
 
@@ -103,6 +106,7 @@ class JournalForm
                                     'Team Reviewer' => 'Team Reviewer',
                                 ])
                                 ->required(),
+                            Hidden::make('status')->default('accepted'),
                         ])
                     ]),
 

@@ -58,7 +58,6 @@ class PointsTable
                     ->modalCancelActionLabel('Cancel'),
                
                     Action::make('Certificate')
-                    // ->url(fn ($record): string => route('certificate.download.reviewing', $record->id))
                     ->button()
                     ->icon('heroicon-o-arrow-down-on-square')
                     ->color('primary')

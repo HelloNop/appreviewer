@@ -17,8 +17,9 @@ class Journal extends Model
 
     public function focusAndScopes()
     {
-        return $this->belongsToMany(FocusAndScope::class);
+        return $this->belongsToMany(FocusAndScope::class, 'journal_focus_and_scope');
     }
+
 
 
     public function journalEditors(): HasMany

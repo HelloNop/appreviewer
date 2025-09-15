@@ -3,15 +3,20 @@
 namespace App\Livewire;
 
 
+use Exception;
 use App\Models\User;
 use App\Models\Journal;
 use Livewire\Component;
+use App\Models\JournalUser;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\Checkbox;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,10 +25,6 @@ use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 use Asmit\FilamentUpload\Forms\Components\AdvancedFileUpload;
-use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\DB;
-use Exception;
-use Spatie\Permission\Models\Role;
 
 class FormCall extends Component implements HasForms
 {
@@ -116,7 +117,7 @@ class FormCall extends Component implements HasForms
                                     ->options(
                                         Journal::orderBy('title')
                                             ->get()
-                                            ->mapWithKeys(fn($j) => [$j->id => "{$j->title} {$j->last_name}"])
+                                            ->mapWithKeys(fn($j) => [$j->id => "{$j->title} ({$j->singkatan})"])
                                             ->toArray()
                                 )->statePath('journalUser'),
                             ]),
@@ -196,15 +197,21 @@ class FormCall extends Component implements HasForms
             
             // Simpan relasi many-to-many dengan journals
             if (!empty($journalUserData)) {
-                $position = $rolesData === 'Editor' ? 'editor' : 'reviewer';
-                
                 foreach ($journalUserData as $journalId) {
-                    $user->journals()->attach($journalId, [
-                        'position' => $position,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-                }
+                    $position = $rolesData === 'Editor' ? 'Editor' : 'Reviewer';
+                    $lastSortOrder = JournalUser::where('journal_id', $journalId)
+                        ->where('position', $position)
+                        ->max('sort_order') ?? 0;
+                    
+                    foreach ($journalUserData as $journalId) {
+                        $user->journals()->attach($journalId, [
+                            'position' => $position,
+                            'sort_order' => $lastSortOrder + 1,
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ]);
+                    }
+            }
             }
             
             // Assign role menggunakan Spatie Permission

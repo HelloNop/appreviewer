@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\JournalUsers\Tables;
 
 use Filament\Tables\Table;
+use App\Models\JournalUser;
 use Filament\Actions\Action;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\BulkAction;
@@ -69,7 +70,8 @@ class JournalUsersTable
                 Action::make('Email')
                     ->button()
                     ->icon('heroicon-o-paper-airplane')
-                    ->visible(fn () => auth()->user()->hasRole('super_admin'))
+                    // ->visible(fn () => auth()->user()->hasRole('super_admin')) 
+                    ->authorize('action', JournalUser::class)
                     ->color('secondary')
                     ->disabled(fn (Model $record): bool => $record->status != 'accepted')
                     ->action(function ($record) {
@@ -87,7 +89,7 @@ class JournalUsersTable
                     ->label('Acc')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn () => auth()->user()->hasRole('super_admin'))
+                     ->authorize('action', JournalUser::class)
                     ->action(function ($record) {
                         $record->update([
                             'status' => 'accepted',
@@ -102,10 +104,9 @@ class JournalUsersTable
                     }),
             ])
             
-
             ->toolbarActions([
                     BulkAction::make('Send Email')
-                    ->visible(fn () => auth()->user()->hasRole('super_admin'))
+                     ->authorize('action', JournalUser::class)
                     ->icon('heroicon-o-paper-airplane')
                     ->color('secondary')
                     ->requiresConfirmation()
@@ -134,7 +135,7 @@ class JournalUsersTable
                              ->send();
                     }),
                     BulkAction::make('Active')
-                        ->visible(fn () => auth()->user()->hasRole('super_admin'))
+                         ->authorize('action', JournalUser::class)
                         ->icon('heroicon-o-check-circle')
                         ->button()
                         ->color('success')

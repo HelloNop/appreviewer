@@ -63,7 +63,7 @@ class User extends Authenticatable
     public function journals()
     {
         return $this->belongsToMany(Journal::class, 'journal_user', 'user_id', 'journal_id')
-                    ->withPivot('role', 'is_owner') // jika ada kolom tambahan di pivot
+                    ->withPivot('position', 'sort_order', 'status') // jika ada kolom tambahan di pivot
                     ->withTimestamps();
     }
     

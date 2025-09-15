@@ -10,17 +10,7 @@ use App\Filament\Resources\JournalUsers\JournalUserResource;
 class ListJournalUsers extends ListRecords
 {
     protected static string $resource = JournalUserResource::class;
-    public function getHeading(): string
-    {
-        $user = Filament::auth()->user(); // atau auth()->user()
-        $roles = $user->roles->pluck('name')->toArray();
-
-        if (in_array('Editor', $roles) || in_array('Reviewer', $roles)) {
-            return 'Certificate';
-        }
-
-        return 'Certificate Editor and Reviewer';
-    }
+    protected static ?string $title = 'Certificate';
 
     protected function getHeaderActions(): array
     {

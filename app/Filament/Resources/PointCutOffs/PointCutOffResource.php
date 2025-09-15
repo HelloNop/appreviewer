@@ -2,20 +2,18 @@
 
 namespace App\Filament\Resources\PointCutOffs;
 
-use App\Filament\Resources\PointCutOffs\Pages\CreatePointCutOff;
-use App\Filament\Resources\PointCutOffs\Pages\EditPointCutOff;
-use App\Filament\Resources\PointCutOffs\Pages\ListPointCutOffs;
-use App\Filament\Resources\PointCutOffs\Pages\ViewPointCutOff;
-use App\Filament\Resources\PointCutOffs\Schemas\PointCutOffForm;
-use App\Filament\Resources\PointCutOffs\Schemas\PointCutOffInfolist;
-use App\Filament\Resources\PointCutOffs\Tables\PointCutOffsTable;
-use App\Models\PointCutOff;
-use BackedEnum;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Table;
 use UnitEnum;
+use BackedEnum;
+use Filament\Tables\Table;
+use App\Models\PointCutOff;
+use Filament\Schemas\Schema;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\PointCutOffs\Pages\ListPointCutOffs;
+use App\Filament\Resources\PointCutOffs\Schemas\PointCutOffForm;
+use App\Filament\Resources\PointCutOffs\Tables\PointCutOffsTable;
+use App\Filament\Resources\PointCutOffs\Schemas\PointCutOffInfolist;
 
 class PointCutOffResource extends Resource
 {
@@ -43,7 +41,16 @@ class PointCutOffResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return PointCutOffsTable::configure($table);
+        return PointCutOffsTable::configure($table)
+            ->modifyQueryUsing(function (Builder $query) {
+                $user = Auth::user();
+                if (
+                    $user->roles->contains('name', 'Reviewer') ||
+                    $user->roles->contains('name', 'Editor')
+                ) {
+                    $query->where('user_id', $user->id);
+                }
+            });
     }
 
     public static function getRelations(): array
@@ -57,7 +64,6 @@ class PointCutOffResource extends Resource
     {
         return [
             'index' => ListPointCutOffs::route('/'),
-            // 'view' => ViewPointCutOff::route('/{record}'),
         ];
     }
 }

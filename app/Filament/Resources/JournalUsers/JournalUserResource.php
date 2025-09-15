@@ -7,15 +7,10 @@ use BackedEnum;
 use Filament\Tables\Table;
 use App\Models\JournalUser;
 use Filament\Schemas\Schema;
-use Filament\Facades\Filament;
 use Filament\Resources\Resource;
-use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\JournalUsers\Pages\EditJournalUser;
 use App\Filament\Resources\JournalUsers\Pages\ListJournalUsers;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
-use App\Filament\Resources\JournalUsers\Pages\CreateJournalUser;
 use App\Filament\Resources\JournalUsers\Schemas\JournalUserForm;
 use App\Filament\Resources\JournalUsers\Tables\JournalUsersTable;
 
@@ -29,18 +24,7 @@ class JournalUserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-gift';
 
-    public static function getNavigationLabel(): string
-    {
-        $user = Filament::auth()->user(); // atau auth()->user()
-        
-        $roles = $user->roles->pluck('name')->toArray();
-
-        if (in_array('Editor', $roles) || in_array('Reviewer', $roles)) {
-            return 'My Certificate';
-        }
-
-        return 'Certificate'; // default untuk role lain
-    }
+    protected static ?string $navigationLabel = 'Certificate';
 
     public static function form(Schema $schema): Schema
     {

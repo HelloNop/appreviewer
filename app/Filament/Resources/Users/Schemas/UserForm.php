@@ -73,6 +73,13 @@ class UserForm
                             ->options(config('countries'))
                             ->searchable()
                             ->preload(),
+                        Select::make('focusAndScopes')
+                            ->label('Review Interest')
+                            ->helperText('You can select one or more Focus and Scope.')
+                            ->multiple()
+                            ->options(\App\Models\FocusAndScope::pluck('name', 'id'))
+                            ->required()
+                            ->statePath('focusAndScopes'),
                         FileUpload::make('profile_photo')
                             ->label('Profile Picture')
                             ->disk('public')
