@@ -40,6 +40,7 @@ class AdminPanelProvider extends PanelProvider
                 'tombol' => Color::Slate,
                 'success' => Color::Green,
             ])
+            ->favicon(asset('images/favicon.ico'))
             ->font('Poppins')
             ->brandName(config('app.name'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
