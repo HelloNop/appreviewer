@@ -57,11 +57,6 @@ class UserForm
                         TextInput::make('scopus')
                             ->label('Scopus ID')
                             ->url(),
-                        Select::make('focusAndScopes')
-                                ->relationship('focusAndScopes', 'name')
-                                ->label('Review Interest')
-                                ->multiple()
-                                ->preload(),
                         PhoneInput::make('phone')
                             ->label('Whatsapp Number'),
                         TextInput::make('department')
@@ -78,7 +73,6 @@ class UserForm
                             ->helperText('You can select one or more Focus and Scope.')
                             ->multiple()
                             ->options(\App\Models\FocusAndScope::pluck('name', 'id'))
-                            ->required()
                             ->statePath('focusAndScopes'),
                         FileUpload::make('profile_photo')
                             ->label('Profile Picture')
