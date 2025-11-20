@@ -78,6 +78,11 @@ class FormCall extends Component implements HasForms
                                 ->label('Scopus ID')
                                 ->url()
                                 ->required(),
+                            TextInput::make('orchid')
+                                ->label('ORCHID iD')
+                                ->placeholder('0000-0001-2345-6789')
+                                ->mask('9999-9999-9999-9999')
+                                ->helperText('Enter your 16-digit ORCHID iD'),
                             TextInput::make('department')
                                     ->label('Faculty / Department')
                                     ->required(),

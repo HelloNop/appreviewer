@@ -17,7 +17,7 @@ protected function getStats(): array
     $user = Auth::user();
 
     // Jika user punya role Reviewer atau Editor
-    if ($user->roles->whereIn('name', ['Reviewer', 'Editor'])->isNotEmpty()) {
+    if ($user->roles->whereIn('name', ['Reviewer', 'Editor', 'Proofreader'])->isNotEmpty()) {
         $totalReviews = Point::where('user_id', Auth::user()->id)->count();
         $point = Auth::user()->point;
         $totalPaidPint = PointCutOff::where('user_id', Auth::user()->id)->sum('total');

@@ -32,6 +32,7 @@ class User extends Authenticatable
         'country',
         'google_scholars',
         'scopus',
+        'orchid',
         'affiliation',
         'department',
         'cv',

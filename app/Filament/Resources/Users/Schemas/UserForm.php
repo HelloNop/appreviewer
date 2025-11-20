@@ -57,6 +57,11 @@ class UserForm
                         TextInput::make('scopus')
                             ->label('Scopus ID')
                             ->url(),
+                        TextInput::make('orchid')
+                            ->label('ORCHID iD')
+                            ->placeholder('0000-0001-2345-6789')
+                            ->mask('9999-9999-9999-9999')
+                            ->helperText('Enter your 16-digit ORCHID iD'),
                         PhoneInput::make('phone')
                             ->label('Whatsapp Number'),
                         TextInput::make('department')
