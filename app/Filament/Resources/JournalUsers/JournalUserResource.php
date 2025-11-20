@@ -24,7 +24,7 @@ class JournalUserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-gift';
 
-    protected static ?string $navigationLabel = 'Certificate';
+    protected static ?string $navigationLabel = 'Certificate and SK';
 
     public static function form(Schema $schema): Schema
     {
@@ -35,13 +35,15 @@ class JournalUserResource extends Resource
     {
         return JournalUsersTable::configure($table)
             ->modifyQueryUsing(function (Builder $query) {
-                $user = Auth::user();
-                if (
-                    $user->roles->contains('name', 'Reviewer') ||
-                    $user->roles->contains('name', 'Editor')
-                ) {
-                    $query->where('user_id', $user->id);
+               $user = Auth::user();
+                if ($user->hasAnyRole(['Team', 'super_admin', 'admin'])) {
+                    return $query;
                 }
+
+                if ($user->hasAnyRole(['Reviewer', 'Editor', 'Proofreader'])) {
+                   return $query->where('user_id', $user->id);
+                }
+
             });
     }
 

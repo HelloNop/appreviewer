@@ -87,7 +87,7 @@
             <div class="title">Certificate of Reviewing</div>
             <div class="subtitle">Awarded in {{$data['bulan']}} {{$data['tahun']}}</div>
             <div class="subtitle">presented to</div>
-            <div class="name">{{$data['user']}}</div>
+            <div class="name">{{$data['name'] ?? $data['user'] ?? 'Reviewer'}}</div>
             <div class="description">
                 in recognition of the review made for the article entitled:
             </div>

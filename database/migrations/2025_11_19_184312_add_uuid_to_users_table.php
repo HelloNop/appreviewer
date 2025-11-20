@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('journal_user', function (Blueprint $table) {
-            $table->integer('sort_order')->default(0)->after('status');
+        Schema::table('users', function (Blueprint $table) {
+            $table->uuid('uuid')->nullable()->after('id');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('journal_user', function (Blueprint $table) {
-            $table->dropColumn('sort_order');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('uuid');
         });
     }
 };

@@ -31,7 +31,6 @@ class PointResource extends Resource
         return ['Judul_Artikel'];
     }
 
-    // protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
     protected static string|BackedEnum|null $navigationIcon = Phosphor::Wallet;
     
     protected static ?string $navigationLabel = 'Point Reviewer';
@@ -47,9 +46,15 @@ class PointResource extends Resource
     {
         return PointsTable::configure($table)
             ->modifyQueryUsing(function (Builder $query) {
-                if (Auth::user()->roles->contains('name', 'Reviewer')) { 
-                        return $query->where('user_id', Auth::user()->id); 
-                    } 
+                $user = Auth::user();
+                if ($user->hasAnyRole(['Team', 'super_admin', 'admin'])) {
+                    return $query;
+                }
+
+                if ($user->hasAnyRole(['Reviewer', 'Editor', 'Proofreader'])) {
+                   return $query->where('user_id', $user->id);
+                }
+
             });
     }
 

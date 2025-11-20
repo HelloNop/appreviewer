@@ -10,6 +10,8 @@ class Point extends Model
         'user_id',
         'journal_id',
         'Judul_Artikel',
+        'cut_off_date',
+        'is_cutoff'
     ];
 
     public function user()

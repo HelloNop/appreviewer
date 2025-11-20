@@ -19,6 +19,7 @@ class PointsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('user.name')
                     ->numeric()
@@ -34,8 +35,7 @@ class PointsTable
                     ->wrap()
                     ->words(10, end: '....'),
                 IconColumn::make('is_cutoff')
-                    ->boolean()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -64,7 +64,8 @@ class PointsTable
                     ->openUrlInNewTab()
                     ->action(function (Model $record) {
                             $backgroundPath = storage_path('app/public/' . $record->journal->certificate);
-                            $qrcode = base64_encode(QrCode::format('svg')->size(200)->generate($record->journal->url));
+                            $fullUrl = route('public-profile', ['user' => $record->user->uuid]);
+                            $qrcode = base64_encode(QrCode::format('svg')->size(200)->generate($fullUrl));
                             $tanggal = $record->created_at; 
                             $bulan = $tanggal->format('F');
                             $tahun = $tanggal->format('Y');

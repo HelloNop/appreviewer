@@ -2,14 +2,15 @@
 
 namespace App\Mail;
 
+use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class WelcomeMail extends Mailable
+class ContributionMail extends Mailable
 {
-    use SerializesModels;
+    use Queueable, SerializesModels;
 
     public $data;
 
@@ -27,7 +28,7 @@ class WelcomeMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Welcome to ' . config('app.name'),
+            subject: 'Certificate of Contribution',
         );
     }
 
@@ -37,7 +38,7 @@ class WelcomeMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'email.welcomeMail',
+            view: 'email.reviewingMail',
             with: ['data' => $this->data]
         );
     }
@@ -49,6 +50,6 @@ class WelcomeMail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        return []; 
     }
 }

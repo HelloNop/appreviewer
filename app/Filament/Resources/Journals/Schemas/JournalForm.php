@@ -13,6 +13,8 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater\TableColumn;
 
+use function Laravel\Prompts\select;
+
 class JournalForm
 {
     public static function configure(Schema $schema): Schema
@@ -28,7 +30,10 @@ class JournalForm
                             ->schema([
                                 TextInput::make('singkatan')
                                     ->required(),
-                                TextInput::make('publisher')
+                                select::make('publisher_id')
+                                    ->label('Publisher')
+                                    ->options(\App\Models\Publisher::all()->pluck('brand_name', 'id'))
+                                    ->searchable()
                                     ->required(),
                                 TextInput::make('url')
                                     ->url()
@@ -59,7 +64,7 @@ class JournalForm
                         ->schema([
                             Select::make('user_id')
                                 ->label('User')
-                                ->options(\App\Models\User::role('Editor')->pluck('name', 'id', ))
+                                ->options(\App\Models\User::role(['Editor', 'Proofreader'])->pluck('name', 'id', ))
                                 ->searchable()
                                 ->preload()
                                 ->required(),
@@ -72,6 +77,7 @@ class JournalForm
                                     'Associate Editor' => 'Associate Editor',
                                     'International Editor' => 'International Editor',
                                     'Team Editor' => 'Team Editor',
+                                    'Proofreader' => 'Proofreader',
                                 ])
                                 ->required(),
                             Hidden::make('status')->default('accepted'),

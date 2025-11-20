@@ -17,4 +17,5 @@ class FocusAndScope extends Model
     {
         return $this->belongsToMany(Journal::class);
     }
+    
 }

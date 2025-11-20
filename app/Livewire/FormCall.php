@@ -52,7 +52,8 @@ class FormCall extends Component implements HasForms
                             ->label('Full Name & Title')
                             ->required(),
                         PhoneInput::make('phone')
-                                ->label('Whatsapp Number'),
+                            ->label('Whatsapp Number')
+                            ->required(),
                         TextInput::make('email')
                             ->label('Email address')
                             ->email()
@@ -92,9 +93,9 @@ class FormCall extends Component implements HasForms
                                 ->placeholder('Select country'),
                         ])->columnSpanFull()
                         ->statePath('data'),
-                        
-                        Section::make('Review Interests')
-                            ->description('Please indicate your preferred journals and areas of expertise for reviewing. This information will help us match you with manuscripts that best align with your background and interests.')
+
+                        Section::make('Roles & Expertise')
+                            ->description('Select your desired role and areas of expertise')
                             ->schema([
                                 Radio::make('Apply As')
                                     ->label('Apply As')
@@ -103,23 +104,28 @@ class FormCall extends Component implements HasForms
                                         'Reviewer' => 'Reviewer',
                                         'Editor' => 'Editor',
                                     ])->statePath('roles'),
+                            ])->columnSpanFull(),
+                        
+                        Section::make('Review Interests')
+                            ->description('Please indicate your areas of expertise for reviewing. This information will help us match you with manuscripts that best align with your background and interests.')
+                            ->schema([
                                 Select::make('focusAndScopes')
-                                    ->label('Review Interest')
+                                    ->label('Topics of Interest')
                                     ->helperText('You can select one or more Focus and Scope.')
                                     ->multiple()
                                     ->options(\App\Models\FocusAndScope::pluck('name', 'id'))
-                                    ->required()
-                                    ->statePath('focusAndScopes'),
-                                CheckboxList::make('journals')
-                                    ->label('Select Journals')
-                                    ->searchable()
-                                    ->required()
-                                    ->options(
-                                        Journal::orderBy('title')
-                                            ->get()
-                                            ->mapWithKeys(fn($j) => [$j->id => "{$j->title} ({$j->singkatan})"])
-                                            ->toArray()
-                                )->statePath('journalUser'),
+                                    ->required(),
+                                
+                                // CheckboxList::make('journals')
+                                //     ->label('Select Journals')
+                                //     ->searchable()
+                                //     ->required()
+                                //     ->options(
+                                //         Journal::orderBy('title')
+                                //             ->get()
+                                //             ->mapWithKeys(fn($j) => [$j->id => "{$j->title} ({$j->singkatan})"])
+                                //             ->toArray()
+                                // )->statePath('journalUser'),
                             ]),
 
                         Section::make('Upload Files')
@@ -151,19 +157,32 @@ class FormCall extends Component implements HasForms
                             Section::make('Agreement')
                                 ->description('By clicking the submit button, you agree to the terms and conditions.')
                                 ->schema([
-                                    Checkbox::make('1')
+                                    Checkbox::make('agreement.objectivity')
                                         ->label('I will review manuscripts objectively, fairly, and confidentially, without using the content for personal advantage')
                                         ->required(),
-                                    Checkbox::make('2')
+                                    Checkbox::make('agreement.conflict_of_interest')
                                         ->label('I will disclose any potential conflict of interest before accepting a review assignment.')
                                         ->required(),
-                                    Checkbox::make('3')
+                                    Checkbox::make('agreement.constructive_feedback')
                                         ->label('I will provide constructive, clear, and timely feedback within my area of expertise.')
                                         ->required(),
-                                    Checkbox::make('4')
-                                        ->label('I agree to follow the reviewer guidelines and uphold the journal’s publication ethics.')
+                                    Checkbox::make('agreement.ethics')
+                                        ->label('I agree to follow the reviewer guidelines and uphold the journal publication ethics.')
                                         ->required(),
-                                ])->statePath('data'),
+                                ])
+                                ->columnSpanFull()
+                                ->statePath('data'),
+
+                            Section::make('Signature')
+                                ->description('Please provide your digital signature below to confirm your agreement to the terms and conditions outlined above.')
+                                ->schema([
+                                    \App\Forms\Components\SignaturePad::make('signature')
+                                        ->label('Your Signature')
+                                        ->required(),
+                                ])
+                                ->columnSpanFull()
+                                ->statePath('data'),
+                                
             ]);
         }
     
@@ -179,8 +198,16 @@ class FormCall extends Component implements HasForms
             // Pisahkan data user dari data relasi
             $userData = $data['data'];
             $focusAndScopesData = $this->focusAndScopes;
-            $journalUserData = $data['journalUser'];
+            $journalUserData = $data['journalUser'] ?? [];
             $rolesData = $this->roles;
+            
+            // Ekstrak agreement & signature dari userData
+            $agreementData = $userData['agreement'] ?? [];
+            $signatureData = $userData['signature'] ?? null;
+            
+            // Hapus agreement dan signature dari userData sebelum create user
+            unset($userData['agreement']);
+            unset($userData['signature']);
             
             // Hash password
             if (isset($userData['password'])) {
@@ -221,6 +248,15 @@ class FormCall extends Component implements HasForms
                 if (Role::where('name', $roleName)->exists()) {
                     $user->assignRole($roleName);
                 }
+            }
+            
+            // Simpan Agreement dan Signature ke tabel agreements
+            if (!empty($agreementData) || !empty($signatureData)) {
+                \App\Models\Agreement::create([
+                    'user_id' => $user->id,
+                    'agreement' => $agreementData, // Akan disimpan sebagai JSON
+                    'signature' => $signatureData, // Base64 string
+                ]);
             }
             
             DB::commit();

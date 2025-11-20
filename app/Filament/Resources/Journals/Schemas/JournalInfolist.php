@@ -21,7 +21,7 @@ class JournalInfolist
                     ->schema([
                         TextEntry::make('title'),
                         TextEntry::make('singkatan'),
-                        TextEntry::make('publisher'),
+                        TextEntry::make('publisher.brand_name')->label('Publisher'),
                         TextEntry::make('url')->label('Website')->url(fn ($state) => $state),
                     ])->columnSpanFull(),
 

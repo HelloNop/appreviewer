@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('journal_user', function (Blueprint $table) {
-            $table->enum('status', ['pending', 'accepted'])->default('pending')->after('position');
+        Schema::table('users', function (Blueprint $table) {
+            $table->integer('point_proofreader')->default(0)->after('point');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('journal_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             //
         });
     }

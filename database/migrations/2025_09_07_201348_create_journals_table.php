@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('journals', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('publisher_id')->constrained()->cascadeOnDelete();
             $table->string('title');
             $table->string('singkatan');
-            $table->string('publisher');
             $table->string('certificate')->nullable();
             $table->string('url')->nullable();
             $table->timestamps();

@@ -67,4 +67,9 @@ class RolePolicy
         return $authUser->can('Reorder:Role');
     }
 
+    public function action(AuthUser $authUser): bool
+    {
+        return $authUser->can('Action:Role');
+    }
+
 }

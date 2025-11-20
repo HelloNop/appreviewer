@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Mail\ContributionMail;
 use App\Models\User;
 use App\Mail\MailJob;
 use App\Mail\pointMailJob;
@@ -18,7 +19,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 
-class sendReviewerEmailJob implements ShouldQueue
+class SendEmailContributionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -39,7 +40,8 @@ class sendReviewerEmailJob implements ShouldQueue
         try {
         $point = Point::with('user', 'journal')->find($this->pointId);
         $backgroundPath = storage_path('app/public/' . $point->journal->certificate);
-        $qrcode = base64_encode(QrCode::format('svg')->size(200)->generate($point->journal->url));
+        $fullUrl = route('public-profile', ['user' => $point->user->uuid]);
+        $qrcode = base64_encode(QrCode::format('svg')->size(200)->generate($fullUrl));
         $tanggal = $point->created_at; 
         $bulan = $tanggal->format('F');
         $tahun = $tanggal->format('Y');
@@ -48,28 +50,22 @@ class sendReviewerEmailJob implements ShouldQueue
         $data = [
             'email' => $point->user->email,
             'name' => $point->user->name,
-            'user' => $point->user->name,
             'judul' => $point->Judul_Artikel,
             'journal' => $point->journal->title,
             'bulan' => $bulan,
             'tahun' => $tahun,
             'qrcode' => $qrcode,
+            'app_url' => config('app.url'),
+            'login_url' => config('app.url') . '/admin/login',
         ];
 
         $pdfOutput = FacadePdf::loadView('certificate.reviewing', compact('data', 'backgroundPath'))->output();
         $filename = 'Certificate of Contribution.pdf';
 
-         // Buat instance mailable dengan data saja
-            $mailable = new pointMailJob($data);
-            
-            // Tambahkan lampiran pada instance mailable
+            $mailable = new ContributionMail($data);
             $mailable->attachData($pdfOutput, $filename, ['mime' => 'application/pdf']);
            
-            // Kirim email menggunakan instance mailable yang sudah lengkap
             Mail::to($data['email'])->send($mailable);
-
-            // Log untuk debugging
-            Log::info('Email berhasil dikirim ke: ' . $data['email']);
             
             if ($userLogin) {
                 Notification::make()
@@ -83,9 +79,6 @@ class sendReviewerEmailJob implements ShouldQueue
 
         catch (\Exception $e) {
             Log::error('Error sending email: ' . $e->getMessage());
-            // Log error untuk debugging
-            $email = isset($data) && isset($data['email']) ? $data['email'] : 'unknown';
-            Log::error('Gagal mengirim email ke: ' . $email . '. Error: ' . $e->getMessage());
             
             $userLogin = $this->userLoginId ? User::find($this->userLoginId) : null;
             if ($userLogin) {

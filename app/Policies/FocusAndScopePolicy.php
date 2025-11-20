@@ -67,4 +67,9 @@ class FocusAndScopePolicy
         return $authUser->can('Reorder:FocusAndScope');
     }
 
+    public function action(AuthUser $authUser): bool
+    {
+        return $authUser->can('Action:FocusAndScope');
+    }
+
 }

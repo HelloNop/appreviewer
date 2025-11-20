@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('google_scholars')->nullable();
             $table->string('scopus')->nullable();
+            $table->string('orchid')->nullable();
             $table->string('affiliation')->nullable();
             $table->string('department')->nullable();
             $table->string('country')->nullable();

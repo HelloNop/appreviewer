@@ -67,4 +67,9 @@ class JournalPolicy
         return $authUser->can('Reorder:Journal');
     }
 
+    public function action(AuthUser $authUser): bool
+    {
+        return $authUser->can('Action:Journal');
+    }
+
 }

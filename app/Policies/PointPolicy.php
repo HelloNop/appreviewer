@@ -67,4 +67,9 @@ class PointPolicy
         return $authUser->can('Reorder:Point');
     }
 
+    public function action(AuthUser $authUser): bool
+    {
+        return $authUser->can('Action:Point');
+    }
+
 }

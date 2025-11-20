@@ -4,8 +4,10 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -24,6 +26,7 @@ class User extends Authenticatable
         'password',
         'email_verified_at',
         'point',
+        'point_proofreader',
         'status',
         'phone',
         'country',
@@ -34,6 +37,16 @@ class User extends Authenticatable
         'cv',
         'profile_photo',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = Str::uuid();
+            }
+        });
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -63,14 +76,14 @@ class User extends Authenticatable
     public function journals()
     {
         return $this->belongsToMany(Journal::class, 'journal_user', 'user_id', 'journal_id')
-                    ->withPivot('position', 'sort_order', 'status') // jika ada kolom tambahan di pivot
+                    ->withPivot('position', 'sort_order', 'status')
                     ->withTimestamps();
     }
     
-    // Relasi dengan FocusAndScope (many-to-many)
     public function focusAndScopes()
     {
-        return $this->belongsToMany(FocusAndScope::class, 'user_focus_and_scope');
+        // return $this->belongsToMany(FocusAndScope::class, 'user_focus_and_scope');
+        return $this->belongsToMany(FocusAndScope::class, 'user_focus_and_scope', 'user_id', 'focus_and_scope_id');
     }
     
     // Relasi dengan Point (one-to-many)
@@ -78,6 +91,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Point::class);
     }
+
+    // relasi dengan profreader
+        public function profreaders()
+    {
+        return $this->hasMany(Point::class);
+    }
+
     
     // Relasi dengan PointCutOff (one-to-many)
     public function pointCutOffs()
@@ -95,6 +115,16 @@ class User extends Authenticatable
     public function getAvatarUrlAttribute()
     {
         return $this->profile_photo_url;
+    }
+
+    public function hasAnyRole(array $roles): bool
+    {
+        return $this->roles->pluck('name')->intersect($roles)->isNotEmpty();
+    }
+
+    public function agreement(): HasOne
+    {
+        return $this->hasOne(Agreement::class);
     }
 
 }

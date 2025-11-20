@@ -69,11 +69,12 @@ class UserForm
                             ->searchable()
                             ->preload(),
                         Select::make('focusAndScopes')
-                            ->label('Review Interest')
+                            ->label('Topics of Interest')
                             ->helperText('You can select one or more Focus and Scope.')
                             ->multiple()
-                            ->options(\App\Models\FocusAndScope::pluck('name', 'id'))
-                            ->statePath('focusAndScopes'),
+                            ->relationship('focusAndScopes', 'name')
+                            ->preload()
+                            ->searchable(),
                         FileUpload::make('profile_photo')
                             ->label('Profile Picture')
                             ->disk('public')

@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('journal_id')->constrained()->cascadeOnDelete();
             $table->string('position');
+            $table->enum('status', ['pending', 'accepted'])->default('pending'); // hapus ->after
+            $table->integer('sort_order')->default(0); // hapus ->after
             $table->timestamps();
         });
     }
@@ -23,6 +25,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
+    
     public function down(): void
     {
         Schema::dropIfExists('journal_user');

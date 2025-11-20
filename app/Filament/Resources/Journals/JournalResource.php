@@ -23,7 +23,7 @@ class JournalResource extends Resource
     protected static ?string $model = Journal::class;
 
     protected static string | UnitEnum | null $navigationGroup = 'Setting';
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 6; 
 
     protected static ?string $recordTitleAttribute = 'title';   
 

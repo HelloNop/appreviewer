@@ -72,4 +72,5 @@ class JournalUserPolicy
         return $authUser->can('Action:JournalUser');
     }
 
+
 }

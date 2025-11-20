@@ -53,6 +53,7 @@ class Profile extends Page implements HasTable, HasForms
                     'cv' => $user->cv,
                     'google_scholars' => $user->google_scholars,
                     'scopus' => $user->scopus,
+                    'focusAndScopes' => $user->focusAndScopes()->pluck('focus_and_scopes.id')->toArray(),
                 ])
                 ->schema([
                     // user info
@@ -82,6 +83,13 @@ class Profile extends Page implements HasTable, HasForms
                             TextInput::make('scopus')
                                 ->label('Scopus ID')
                                 ->url(),
+                            Select::make('focusAndScopes')
+                                ->label('Topics of Interest')
+                                ->helperText('You can select one or more Focus and Scope.')
+                                ->multiple()
+                                ->options(\App\Models\FocusAndScope::pluck('name', 'id'))
+                                ->preload()
+                                ->searchable(),
                             PhoneInput::make('phone')
                                 ->label('Whatsapp Number'),
                             TextInput::make('department')
@@ -106,16 +114,24 @@ class Profile extends Page implements HasTable, HasForms
                                 ->visibility('public')
                                 ->acceptedFileTypes(['application/pdf'])
                                 ->maxSize(1024 * 1024 * 10) // 10MB
-                                ->pdfPreviewHeight(400) // Customize preview height
-                                ->pdfDisplayPage(1) // Set default page
-                                ->pdfToolbar(true) // Enable toolbar
-                                ->pdfZoomLevel(100) // Set zoom level
-                                ->pdfFitType(PdfViewFit::FIT) // Set fit type
-                                ->pdfNavPanes(true) // Enable navigation panes
+                                ->pdfPreviewHeight(400)
+                                ->pdfDisplayPage(1) 
+                                ->pdfToolbar(true)
+                                ->pdfZoomLevel(100)
+                                ->pdfFitType(PdfViewFit::FIT)
+                                ->pdfNavPanes(true)
                         ])->columnSpanFull(),
 
                 ])->action(function (array $data) use ($user): void {
+                    // Ambil dan lepaskan data relasi pivot dari array utama
+                    $focusIds = $data['focusAndScopes'] ?? [];
+                    unset($data['focusAndScopes']);
+
+                    // Update data user (password hanya jika diisi sudah diatur oleh field dehydrated)
                     $user->update($data);
+
+                    // Sinkronkan pivot focus & scope
+                    $user->focusAndScopes()->sync($focusIds);
                 })->successNotification(
                     Notification::make()
                         ->success()

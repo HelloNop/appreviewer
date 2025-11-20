@@ -22,7 +22,7 @@ class FocusAndScopeResource extends Resource
     protected static ?string $model = FocusAndScope::class;
 
     protected static string | UnitEnum | null $navigationGroup = 'Setting';
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 7;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-tag';
 

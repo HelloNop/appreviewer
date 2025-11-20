@@ -7,20 +7,14 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Support\Enums\Size;
-use Deldius\UserField\UserColumn;
-use Filament\Actions\DeleteAction;
-use Filament\Tables\Columns\Column;
 use Illuminate\Foundation\Auth\User;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\ViewField;
 use Filament\Notifications\Notification;
-use BaconQrCode\Renderer\RendererStyle\Fill;
 use Illuminate\Database\Eloquent\Collection;
+use App\Models\Point;
+use App\Models\Profreader;
+use Filament\Forms\Components\Select;
 
 class UsersTable
 {
@@ -34,7 +28,11 @@ class UsersTable
                     ->label('Email address')
                     ->searchable(),
                 TextColumn::make('point')
-                    ->label('Point')
+                    ->label('Rev Point')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('point_proofreader')
+                    ->label('Proof Point')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('roles.name')
@@ -79,35 +77,91 @@ class UsersTable
                     ->icon('heroicon-o-x-circle')
                     
                     ->schema([
+                        Select::make('type')
+                            ->label('Type of Cutting Point')
+                            ->options([
+                                'reviewer' => 'Reviewer Point',
+                                'proofreader' => 'Proofreader Point',
+                            ])
+                            ->required(),
                         Textarea::make('reason')
                             ->label('Reason for Cutting Point')
                             ->required(),
                     ])
                     ->action(function (User $record, array $data) {
-                            if ($record->point == 0) {
-                                Notification::make()
-                                    ->title('Error Cut, User Point is 0')
-                                    ->danger()
-                                    ->send();
-                                    return;
-                            }
-                            // simpan data di tabel cut_point
-                            $record->pointCutOffs()->create([
-                                'total' => $record->point,
-                                'reason' => $data['reason'],
-                                'user_id' => $record->id,
-                                'created_at' => now(),
-                                'updated_at' => now(),
-                            ]);
-                            // update point user
-                            $record->update(['point' => 0]);
-                            Notification::make()
-                                ->title('Point successfully cut')
-                                ->body('Point: ' . $record->point . ' Reason: ' . $data['reason'])
-                                ->success()
-                                ->send()
-                                ->sendToDatabase($record);
+                        self::handleCut($record, $data['type'], $data['reason']);
                     })
+                    // ->action(function (User $record, array $data) {
+                    //         switch ($data['type']) {
+                    //             case 'proofreader':
+                    //                 if ($record->point_proofreader == 0) {
+                    //                     Notification::make()
+                    //                         ->title('Error Cut, User Proofreader Point is 0')
+                    //                         ->danger()
+                    //                         ->send();
+                    //                         return;
+                    //                 }
+                    //                 // create point cut off
+                    //                 $record->pointCutOffs()->create([
+                    //                     'total' => $record->point_proofreader,
+                    //                     'reason' => $data['reason'],
+                    //                     'type' => $data['type'],
+                    //                     'user_id' => $record->id,
+                    //                     'created_at' => now(),
+                    //                     'updated_at' => now(),
+                    //                 ]);
+
+                    //                 // update point user
+                    //                 $record->update(['point_proofreader' => 0]);
+
+                    //                 // update tabel profreaders
+                    //                 Profreader::where('user_id', $record->id)->update([
+                    //                     'is_cutoff' => 1,
+                    //                     'cut_off_date' => now()
+                    //                 ]);
+
+
+                    //                 break;
+
+                    //             case 'reviewer':
+                    //                 if ($record->point == 0) {
+                    //                     Notification::make()
+                    //                         ->title('Error Cut, User Reviewer Point is 0')
+                    //                         ->danger()
+                    //                         ->send();
+                    //                         return;
+                    //                 }
+
+                    //                 // create point cut off
+                    //                 $record->pointCutOffs()->create([
+                    //                     'total' => $record->point,
+                    //                     'reason' => $data['reason'],
+                    //                     'type' => $data['type'],
+                    //                     'user_id' => $record->id,
+                    //                     'created_at' => now(),
+                    //                     'updated_at' => now(),
+                    //                 ]);
+
+                    //                 // update point user
+                    //                 $record->update(['point' => 0]);
+
+                    //                 // update tabel points
+                    //                 Point::where('user_id', $record->id)->update([
+                    //                     'is_cutoff' => 1,
+                    //                     'cut_off_date' => now()
+                    //                 ]);
+
+                    //                 break;
+                    //         }
+
+
+                    //         Notification::make()
+                    //             ->title('Point successfully cut')
+                    //             ->body('Point: ' . $record->point . ' Reason: ' . $data['reason'])
+                    //             ->success()
+                    //             ->send()
+                    //             ->sendToDatabase($record);    
+                    // })
             ])
             ->toolbarActions([
                     BulkAction::make('delete')
@@ -116,7 +170,7 @@ class UsersTable
                         ->color('danger')
                         ->requiresConfirmation()
                         ->action(fn (Collection $records) => $records->each->delete()),
-
+                    
                     BulkAction::make('active')
                         ->icon('heroicon-o-check-circle')
                         ->color('primary')
@@ -124,7 +178,7 @@ class UsersTable
                         ->modalHeading('Aktifkan User')
                         ->modalDescription('Apakah Anda yakin ingin mengaktifkan user untuk semua pengguna yang dipilih?')
                         ->modalSubmitActionLabel('Aktifkan')
-                        ->action(function (Collection $records) {
+                        ->action(function (\App\Models\User $records) {
                             foreach ($records as $record) {
                                 $record->update([
                                     'status' => 'active',
@@ -145,7 +199,7 @@ class UsersTable
                         ->modalHeading('Non-Aktifkan User')
                         ->modalDescription('Apakah Anda yakin ingin menonaktifkan user untuk semua pengguna yang dipilih?')
                         ->modalSubmitActionLabel('Non-Aktifkan')
-                        ->action(function (Collection $records) {
+                        ->action(function (\App\Models\User $records) {
                             foreach ($records as $record) {
                                 $record->update(['status' => 'pending']);
                             }
@@ -156,8 +210,123 @@ class UsersTable
                         })
                         
                         ->icon('heroicon-o-x-circle')
-                        ->color('danger')
+                        ->color('warning')
                         ->label('Inactive'),
+
+                    BulkAction::make('cut')
+                        ->authorize('action', User::class)
+                        ->label('Cut Point')
+                        ->button()
+                        ->modalWidth('xl')
+                        ->color('danger')
+                        ->icon('heroicon-o-x-circle')
+                        ->schema([
+                            Select::make('type')
+                                ->label('Type of Cutting Point')
+                                ->options([
+                                    'reviewer' => 'Reviewer Point',
+                                    'proofreader' => 'Proofreader Point',
+                                ])
+                                ->required(),
+                            Textarea::make('reason')
+                                ->label('Reason for Cutting Point')
+                                ->required(),
+                        ])
+                        ->action(function (Collection $records, array $data) {
+                            $records->each(fn($record) => self::handleCut($record, $data['type'], $data['reason']));
+                        })
+                        ->requiresConfirmation(),
             ]);
     }
+
+
+
+    protected static function handleCut(User $record, string $type, string $reason)
+    {
+        $point = 0;
+
+        switch ($type) {
+            case 'proofreader':
+                if ($record->point_proofreader == 0) {
+                    Notification::make()
+                        ->title('Error Cut, User Proofreader Point is 0')
+                        ->danger()
+                        ->send();
+                    return false;
+                }
+
+                $point = $record->point_proofreader;
+
+                // create point cut off
+                $record->pointCutOffs()->create([
+                    'total' => $point,
+                    'reason' => $reason,
+                    'type' => $type,
+                    'user_id' => $record->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                // update point user
+                $record->update(['point_proofreader' => 0]);
+
+                // update tabel profreaders
+                Profreader::where('user_id', $record->id)->update([
+                    'is_cutoff' => 1,
+                    'cut_off_date' => now(),
+                ]);
+
+                break;
+
+            case 'reviewer':
+                if ($record->point == 0) {
+                    Notification::make()
+                        ->title('Error Cut, User Reviewer Point is 0')
+                        ->danger()
+                        ->send();
+                    return false;
+                }
+
+                $point = $record->point;
+
+                // create point cut off
+                $record->pointCutOffs()->create([
+                    'total' => $point,
+                    'reason' => $reason,
+                    'type' => $type,
+                    'user_id' => $record->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                // update point user
+                $record->update(['point' => 0]);
+
+                // update tabel points
+                Point::where('user_id', $record->id)->update([
+                    'is_cutoff' => 1,
+                    'cut_off_date' => now(),
+                ]);
+
+                break;
+
+            default:
+                Notification::make()
+                    ->title('Unknown Type')
+                    ->warning()
+                    ->send();
+                return false;
+        }
+
+        // Notification berhasil
+        Notification::make()
+            ->title('Point successfully cut')
+            ->body("Point: $point, Reason: $reason")
+            ->success()
+            ->send()
+            ->sendToDatabase($record);
+
+        return true;
+    }
+
 }

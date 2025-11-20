@@ -25,6 +25,8 @@ class PointCutOffsTable
                     ->sortable(),
                 TextColumn::make('reason')
                     ->searchable(),
+                TextColumn::make('type')
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),

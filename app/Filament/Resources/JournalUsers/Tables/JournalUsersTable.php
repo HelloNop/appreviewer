@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\JournalUsers\Tables;
 
+use App\Jobs\SendEmailCertificate;
 use Filament\Tables\Table;
 use App\Models\JournalUser;
 use Filament\Actions\Action;
@@ -12,7 +13,6 @@ use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use App\Http\Controllers\EmailJobController;
 
 class JournalUsersTable
 {
@@ -45,43 +45,75 @@ class JournalUsersTable
                 //
             ])
             ->recordActions([
-                Action::make('Download')
-                    // ->url(fn ($record): string => route('certificate.download', $record->id))
+                Action::make('Certificate')
                     ->button()
                     ->icon('heroicon-o-arrow-down-on-square')
                     ->color('primary')
                     ->disabled(fn (Model $record): bool => $record->status != 'accepted')
                     ->action(function (Model $record) {
-
                             $backgroundPath = storage_path('app/public/' . $record->journal->certificate);
-                            $qrcode = base64_encode(QrCode::format('svg')->size(200)->generate($record->journal->url));
+                            $fullUrl = route('public-profile', ['user' => $record->user->uuid]);
+                            $qrcode = base64_encode(QrCode::format('svg')->size(200)->generate($fullUrl));
+                            $sk_number = $record->sk_number;
                             $data = [
                                 'user' => $record->user->name,
                                 'journal' => $record->journal->title,
                                 'position' => $record->position,
                                 'qrcode' => $qrcode,
                                 'backgroundPath' => $backgroundPath,
+                                'sk_number' => $sk_number,
                             ];
                             $pdf = Pdf::loadView('certificate.position-certificate', $data);
                         return response()->streamDownload(fn() => print($pdf->output()), 'Certificate_of_' . $record->position . '_' . $record->user->name . '.pdf');
                     }),
-            
+                
+                Action::make('Download SK')
+                    ->label('Unduh SK')
+                    ->button()
+                    ->icon('heroicon-o-arrow-down-on-square')
+                    ->color('primary')
+                    ->disabled(fn (Model $record): bool => $record->status != 'accepted')
+                    ->action(function (Model $record) {
+                            $banner = storage_path('app/public/' . $record->journal->publisher->banner);
+                            $fullUrl = route('public-profile', ['user' => $record->user->uuid]);
+                            $qrcode = base64_encode(QrCode::format('svg')->size(200)->generate($fullUrl));
+                            $sk_number = $record->sk_number;
+                            $ttd = storage_path('app/public/' . $record->journal->publisher->signature);
 
+                            $data = [
+                                'user' => $record->user->name,
+                                'journal' => $record->journal->title,
+                                'position' => $record->position,
+                                'qrcode' => $qrcode,
+                                'banner' => $banner,
+                                'publisher' => $record->journal->publisher->name,
+                                'brand' => $record->journal->publisher->brand_name,
+                                'sk_number' => $sk_number,
+                                'author' => $record->user->name,
+                                'affiliation' => $record->user->affiliation,
+                                'signature' => $ttd,
+                                'directure' => $record->journal->publisher->director,
+                                'tanggal_sk' => $record->created_at->format('d F Y'),
+
+                            ];
+                            $pdf = Pdf::loadView('certificate.sk', $data);
+                        
+                            return response()->streamDownload(fn() => print($pdf->output()), 'SK' . '-' . $record->id . '-' . $record->journal->singkatan . '_' . $record->user->name . '.pdf');
+                    }),
+            
                 Action::make('Email')
                     ->button()
                     ->icon('heroicon-o-paper-airplane')
-                    // ->visible(fn () => auth()->user()->hasRole('super_admin')) 
                     ->authorize('action', JournalUser::class)
                     ->color('secondary')
                     ->disabled(fn (Model $record): bool => $record->status != 'accepted')
-                    ->action(function ($record) {
-                        // (new SendMailController())->sendMailCertificatePosition($record->id);
-                        (new EmailJobController())->mailJob($record->id);
-                        Notification::make()
-                             ->title('test record sweetalert')
-                             ->body('Email akan dikirim ke ' . $record->user->email . ' di latar belakang.')
-                             ->success()
-                             ->send();
+                    ->action(function (Model $record) {
+                        SendEmailCertificate::dispatch($record->id);
+
+                    Notification::make()
+                        ->title('Email sedang diproses. Mohon tunggu (bisa sampai beberapa menit).')
+                        ->warning()
+                        ->send();
                     }),
                 
                 Action::make('active')
@@ -89,7 +121,8 @@ class JournalUsersTable
                     ->label('Acc')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                     ->authorize('action', JournalUser::class)
+                    ->authorize('action', JournalUser::class)
+                    ->disabled(fn (Model $record): bool => $record->status == 'accepted')
                     ->action(function ($record) {
                         $record->update([
                             'status' => 'accepted',
@@ -106,34 +139,42 @@ class JournalUsersTable
             
             ->toolbarActions([
                     BulkAction::make('Send Email')
-                     ->authorize('action', JournalUser::class)
-                    ->icon('heroicon-o-paper-airplane')
-                    ->color('secondary')
-                    ->requiresConfirmation()
-                    ->modalHeading('Kirim Email Sertifikat')
-                    ->modalDescription('Apakah Anda yakin ingin mengirim email sertifikat ke semua pengguna yang dipilih?')
-                    ->modalSubmitActionLabel('Kirim Email')
-                    ->action(function ($records) {
-                        $emailController = new EmailJobController();
-                        $successCount = 0;
-                        $errorCount = 0;
-                        
-                        foreach ($records as $record) {
-                            try {
-                                $emailController->mailJob($record->id);
-                                $successCount++;
-                            } catch (\Exception $e) {
-                                $errorCount++;
+                        ->authorize('action', JournalUser::class)
+                        ->icon('heroicon-o-paper-airplane')
+                        ->color('secondary')
+                        ->requiresConfirmation()
+                        ->modalHeading('Kirim Email Sertifikat')
+                        ->modalDescription('Apakah Anda yakin ingin mengirim email sertifikat ke semua pengguna yang dipilih?')
+                        ->modalSubmitActionLabel('Kirim Email')
+                        ->action(function ($records) {
+                            $count = 0;
+                            $acceptedOnly = 0;
+                            
+                            foreach ($records as $record) {
+                                if ($record->status == 'accepted') {
+                                    SendEmailCertificate::dispatch($record->id);
+                                    $count++;
+                                } else {
+                                    $acceptedOnly++;
+                                }
                             }
-                        }
-                        
-                        Notification::make()
-                             ->title('Bulk Email Selesai')
-                             ->body("Email berhasil dijadwalkan untuk {$successCount} pengguna." . 
-                                    ($errorCount > 0 ? " {$errorCount} email gagal dijadwalkan." : ''))
-                             ->success()
-                             ->send();
+
+                            if ($count > 0) {
+                                Notification::make()
+                                    ->title('Email Sedang Diproses')
+                                    ->body("$count email sertifikat sedang diproses dan akan dikirim dalam beberapa saat." . 
+                                           ($acceptedOnly > 0 ? " ($acceptedOnly pengguna dilewati karena belum accepted)" : ""))
+                                    ->success()
+                                    ->send();
+                            } else {
+                                Notification::make()
+                                    ->title('Tidak Ada Email yang Dikirim')
+                                    ->body('Semua pengguna yang dipilih belum dalam status accepted.')
+                                    ->warning()
+                                    ->send();
+                            }
                     }),
+
                     BulkAction::make('Active')
                          ->authorize('action', JournalUser::class)
                         ->icon('heroicon-o-check-circle')

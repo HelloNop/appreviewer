@@ -47,7 +47,7 @@
 
         .subtitle {
             font-size: 18px;
-            margin-top: 8px;
+            margin-top: 12px;
         }
 
         .name {
@@ -99,6 +99,9 @@
     <div class="page" style="background-image: url({{$backgroundPath}}); background-size: cover; background-repeat: no-repeat;">
         <div class="content">
             <div class="title">Certificate of Appreciation</div>
+            <div class="description">
+               Certificate Number: <strong>{{$sk_number}}</strong>
+            </div>
             <div class="subtitle">This is to certify that</div>
             <div class="name">{{$user}}</div>
 

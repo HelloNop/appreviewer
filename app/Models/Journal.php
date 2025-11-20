@@ -13,6 +13,7 @@ class Journal extends Model
         'publisher',
         'url',
         'certificate',
+        'publisher_id',
     ];
 
     public function focusAndScopes()
@@ -34,6 +35,11 @@ class Journal extends Model
         return $this->hasMany(JournalUser::class)
             ->whereIn('position', ['Reviewer', 'International Reviewer', 'Team Reviewer'])
             ->orderBy('sort_order', 'asc');
+    }
+
+
+    public function publisher() {
+        return $this->belongsTo(Publisher::class);
     }
 
 

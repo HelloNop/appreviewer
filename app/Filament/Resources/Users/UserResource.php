@@ -31,6 +31,7 @@ class UserResource extends Resource
         return ['name', 'email', 'affiliation', 'country'];
     }
 
+    
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $recordTitleAttribute = 'User';

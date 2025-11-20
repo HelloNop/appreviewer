@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('journal_id')->constrained()->cascadeOnDelete();
             $table->string('Judul_Artikel');
             $table->boolean('is_cutoff')->default(false);
+            $table->timestamp('cut_off_date')->nullable();
             $table->timestamps();
         });
     }

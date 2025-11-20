@@ -31,7 +31,7 @@
                 </div>
             </div>
             
-            <x-filament::button outlined
+            <x-filament::button outlined color="primary"
                 href="{{auth()->user()->scopus}}"
                 target="_blank"
                 tag="a"
@@ -39,8 +39,8 @@
             >
                 Scopus
             </x-filament::button>
-            <x-filament::button outlined
-                href="{{auth()->user()->scholars}}"
+            <x-filament::button outlined color="primary"
+                href="{{auth()->user()->google_scholars}}"
                 target="_blank"
                 tag="a"
                 size="xl"
@@ -115,17 +115,22 @@
             <x-filament::section>
                 <x-slot name="heading">
                     <div class="flex items-center gap-2">
-                        <h3 class="text-base font-semibold ">Review Point</h3>
+                        <h3 class="text-base font-semibold ">Point</h3>
                     </div>
                 </x-slot>
                 
                 <div class="text-center py-4">
                     <div class="text-3xl font-bold  mb-1">{{ auth()->user()->point}}</div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Total Point</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Reviewer Point</p>
+                </div>
+                                <div class="text-center py-4">
+                    <div class="text-3xl font-bold  mb-1">{{ auth()->user()->point_proofreader}}</div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Proofreader Point</p>
                 </div>
             </x-filament::section>
         </div>
     </div>
+    
 
     <div>
         {{ $this->table }}

@@ -10,6 +10,7 @@ class PointCutOff extends Model
         'user_id',
         'total',
         'reason',
+        'type',
     ];
 
     public function user()

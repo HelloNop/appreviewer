@@ -19,7 +19,7 @@ class JournalsTable
                     ->searchable(),
                 TextColumn::make('singkatan')
                     ->searchable(),
-                TextColumn::make('publisher')
+                TextColumn::make('publisher.brand_name')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
