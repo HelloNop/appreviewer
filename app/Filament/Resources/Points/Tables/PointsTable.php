@@ -2,11 +2,12 @@
 
 namespace App\Filament\Resources\Points\Tables;
 
-
+use App\Models\Point;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
 use Illuminate\Support\Facades\Blade;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -19,9 +20,6 @@ class PointsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->headerActions([
-                //
-            ])  
             ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('user.name')
@@ -60,7 +58,7 @@ class PointsTable
                     ->modalSubmitActionLabel('Save')
                     ->modalCancelActionLabel('Cancel'),
                
-                    Action::make('Certificate')
+                Action::make('Certificate')
                     ->button()
                     ->icon('heroicon-o-arrow-down-on-square')
                     ->color('primary')
@@ -91,6 +89,7 @@ class PointsTable
 
 
             ->toolbarActions([
+                
             ]);
     }
 }

@@ -67,4 +67,9 @@ class PointCutOffPolicy
         return $authUser->can('Reorder:PointCutOff');
     }
 
+    public function action(AuthUser $authUser): bool
+    {
+        return $authUser->can('ViewAny:PointCutOff');
+    }
+
 }

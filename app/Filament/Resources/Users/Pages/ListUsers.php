@@ -23,7 +23,8 @@ class ListUsers extends ListRecords
             CreateAction::make()
             ->modalWidth('xl'),
             ImportAction::make()
-                ->importer(UserImporter::class),
+                ->importer(UserImporter::class)
+                ->authorize('action', UserResource::class),
         ];
     }
 

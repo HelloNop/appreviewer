@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\Profreaders\Pages;
 
+use App\Filament\Exports\ProfreaderExporter;
 use App\Filament\Resources\Profreaders\ProfreaderResource;
 use Filament\Actions\CreateAction;
+use Filament\Actions\ExportAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 
@@ -28,6 +30,11 @@ class ListProfreaders extends ListRecords
                         ->success()
                         ->sendToDatabase($record->user);
             }),
+
+            ExportAction::make()
+                ->authorize('action', ProfreaderResource::class)
+                ->label('Export')
+                ->exporter(ProfreaderExporter::class),
 
         ];
     }

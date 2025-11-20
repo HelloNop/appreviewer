@@ -176,7 +176,7 @@ class JournalUsersTable
                     }),
 
                     BulkAction::make('Active')
-                         ->authorize('action', JournalUser::class)
+                        ->authorize('action', JournalUser::class)
                         ->icon('heroicon-o-check-circle')
                         ->button()
                         ->color('success')
