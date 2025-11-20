@@ -19,6 +19,9 @@ class PointsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->headerActions([
+                //
+            ])  
             ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('user.name')

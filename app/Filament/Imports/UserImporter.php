@@ -55,42 +55,32 @@ class UserImporter extends Importer
 
     }
 
-protected function afterFill(): void
-{
-    // Default values
-    $this->record->status = 'active';
-    $this->record->email_verified_at = now();
-    $plainPassword = 'password2025';
-    $this->record->password = bcrypt($plainPassword);
+    protected function afterFill(): void
+    {
+        // Default values
+        $this->record->status = 'active';
+        $this->record->email_verified_at = now();
+        $plainPassword = 'password2025';
+        $this->record->password = bcrypt($plainPassword);
 
-    // Simpan user dulu
-    $this->record->save();
+        // Simpan user dulu
+        $this->record->save();
 
-    // Tangkap role dari CSV
-    if (!empty($this->data['roles'])) {
-        // Split multiple role dengan koma
-        $roles = array_map('trim', explode(',', $this->data['roles']));
+        // Tangkap role dari CSV
+        if (!empty($this->data['roles'])) {
+            // Split multiple role dengan koma
+            $roles = array_map('trim', explode(',', $this->data['roles']));
 
-        // Buat role jika belum ada
-        foreach ($roles as $roleName) {
-            \Spatie\Permission\Models\Role::firstOrCreate(['name' => $roleName]);
+            // Buat role jika belum ada
+            foreach ($roles as $roleName) {
+                \Spatie\Permission\Models\Role::firstOrCreate(['name' => $roleName]);
+            }
+
+            // Assign semua role ke user
+            $this->record->syncRoles($roles); // hapus role lama, set role baru
+            // atau pakai $this->record->assignRole($roles) → tambah tanpa hapus role lama
         }
-
-        // Assign semua role ke user
-        $this->record->syncRoles($roles); // hapus role lama, set role baru
-        // atau pakai $this->record->assignRole($roles) → tambah tanpa hapus role lama
     }
-
-    // // Kirim email welcome dengan informasi login menggunakan job
-    // $emailData = [
-    //     'name' => $this->record->name,
-    //     'email' => $this->record->email,
-    //     'password' => $plainPassword,
-    // ];
-    
-    // // Dispatch job untuk mengirim email welcome
-    // SendWelcomeEmail::dispatch($emailData);
-}
 
     protected function afterSave(): void
     {
