@@ -11,6 +11,7 @@ use Filament\Actions\ExportAction;
 use Illuminate\Support\Facades\Blade;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -36,7 +37,8 @@ class PointsTable
                     ->wrap()
                     ->words(10, end: '....'),
                 IconColumn::make('is_cutoff')
-                    ->boolean(),
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -48,7 +50,11 @@ class PointsTable
             ])
             
             ->filters([
-                //
+                SelectFilter::make('Journal')
+                    ->relationship('journal', 'title')
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
             ])
             ->recordActions([
                 EditAction::make()

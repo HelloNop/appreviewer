@@ -12,6 +12,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
+use Filament\Tables\Filters\SelectFilter;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class JournalUsersTable
@@ -41,9 +42,15 @@ class JournalUsersTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+
             ->filters([
-                //
+                SelectFilter::make('Journal')
+                    ->relationship('journal', 'title')
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
             ])
+
             ->recordActions([
                 Action::make('Certificate')
                     ->button()

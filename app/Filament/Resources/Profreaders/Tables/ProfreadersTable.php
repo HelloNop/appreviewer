@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class ProfreadersTable
@@ -30,7 +31,8 @@ class ProfreadersTable
                     ->wrap()
                     ->words(10, end: '....'),
                 IconColumn::make('is_cutoff')
-                    ->boolean(),
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -43,15 +45,22 @@ class ProfreadersTable
 
 
             ->filters([ 
-                //
+                SelectFilter::make('Journal')
+                    ->relationship('journal', 'title')
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->button()
+                    ->color('secondary')
+                    ->modalHeading('Edit Point')
+                    ->modalSubmitActionLabel('Save')
+                    ->modalCancelActionLabel('Cancel'),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+
             ]);
     }
 }

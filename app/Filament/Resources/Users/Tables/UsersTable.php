@@ -94,6 +94,7 @@ class UsersTable
             ])
             ->toolbarActions([
                     BulkAction::make('delete')
+                        ->authorize('action', User::class)
                         ->icon('heroicon-o-trash')
                         ->label('Delete')
                         ->color('danger')
@@ -101,6 +102,7 @@ class UsersTable
                         ->action(fn (Collection $records) => $records->each->delete()),
                     
                     BulkAction::make('active')
+                        ->authorize('action', User::class)
                         ->icon('heroicon-o-check-circle')
                         ->color('primary')
                         ->requiresConfirmation()
@@ -124,6 +126,7 @@ class UsersTable
 
 
                     BulkAction::make('inactive')
+                        ->authorize('action', User::class)
                         ->requiresConfirmation()
                         ->modalHeading('Non-Aktifkan User')
                         ->modalDescription('Apakah Anda yakin ingin menonaktifkan user untuk semua pengguna yang dipilih?')
