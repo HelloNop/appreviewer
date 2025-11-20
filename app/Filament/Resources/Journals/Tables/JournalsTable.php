@@ -39,7 +39,7 @@ class JournalsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    
                 ]),
             ]);
     }

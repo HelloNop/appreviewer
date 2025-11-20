@@ -83,6 +83,11 @@ class Profile extends Page implements HasTable, HasForms
                             TextInput::make('scopus')
                                 ->label('Scopus ID')
                                 ->url(),
+                            TextInput::make('orchid')
+                                ->label('ORCHID iD')
+                                ->placeholder('0000-0001-2345-6789')
+                                ->mask('9999-9999-9999-9999')
+                                ->helperText('Enter your 16-digit ORCHID iD'),
                             Select::make('focusAndScopes')
                                 ->label('Topics of Interest')
                                 ->helperText('You can select one or more Focus and Scope.')
