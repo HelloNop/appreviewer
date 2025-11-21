@@ -27,7 +27,7 @@
 
                             <tr>
                                 <td align="center" style="font-size:0px;padding:10px 0px 5px 0px;word-break:break-word;">
-                                    <div style="font-size:18px;font-weight:bold;line-height:22px;text-align:center;color:#000000; text-transform: uppercase;">
+                                    <div style="font-size:16px;font-weight:bold;line-height:20px;text-align:center;color:#000000; text-transform: uppercase;">
                                         SURAT KEPUTUSAN {{ $brand }} </br>{{ $publisher }}
                                     </div>
                                     <p style="font-size:12px;line-height:5px;text-align:center;color:#000000;">
@@ -36,11 +36,11 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td align="center" style="font-size:0px;padding:5px 0px 10px 0px;word-break:break-word;">
+                                <td align="center" style="font-size:0px;padding:5px 0px 5px 0px;word-break:break-word;">
                                     <p style="font-size:14px;line-height:10px;text-align:center;color:#000000;">
                                         TENTANG
                                     </p>
-                                    <div style="font-size:18px;font-weight:bold;line-height:22px;text-align:center;color:#000000; text-transform: uppercase;">
+                                    <div style="font-size:16px;font-weight:bold;line-height:20px;text-align:center;color:#000000; text-transform: uppercase;">
                                         PENETAPAN TIM REDAKSI EDITOR DAN REVIEWER </br> JURNAL {{ $brand }}
                                     </div>
                                 </td>
@@ -54,7 +54,7 @@
                             </tr>
                             <tr>
                                 <td align="left" style="font-size:0px;padding: 0px 20px 0px 20px;word-break:break-word;">
-                                    <table style="border-collapse: collapse; width: 100%; #dddddd;font-size:14px;line-height:16px;table-layout:auto;width:100%;">
+                                    <table style="border-collapse: collapse; width: 100%; #dddddd;font-size:12px;line-height:14px;table-layout:auto;width:100%;">
                                         <tr>
                                             <td style="vertical-align: top; padding:5px; width:100px">Menimbang</td>
                                             <td style="vertical-align: top; padding:5px;">:</td>
@@ -83,14 +83,14 @@
                             </tr>
                             <tr>
                                 <td align="center" style="font-size:0px;padding:20px 0px 10px 0px;word-break:break-word;">
-                                    <div style="font-size:18px;font-weight:bold;line-height:22px;text-align:center;color:#000000; text-transform: uppercase;">
+                                    <div style="font-size:16px;font-weight:bold;line-height:20px;text-align:center;color:#000000; text-transform: uppercase;">
                                         MEMUTUSKAN
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td align="left" style="font-size:0px;padding: 0px 20px 0px 20px;word-break:break-word;">
-                                    <table style="border-collapse: collapse; width: 100%; #dddddd;font-size:14px;line-height:16px;table-layout:auto;width:100%;">
+                                    <table style="border-collapse: collapse; width: 100%; #dddddd;font-size:12px;line-height:14px;table-layout:auto;width:100%;">
                                         <tr>
                                             <td style="vertical-align: top; padding:5px; width:60px">Pertama</td>
                                             <td style="vertical-align: top; padding:5px;">:</td>
@@ -101,7 +101,7 @@
                                     </table>
                                 </td>
                             </tr>
-                            <table style="border-collapse: collapse; width: 100%; border: 1px solid #dddddd; padding: 10px 20px 0px 20px">
+                            <table style="font-size:12px;line-height:14px;border-collapse: collapse; width: 100%; border: 1px solid #dddddd; padding: 10px 20px 0px 20px">
                                 <tr style="background-color: #f2f2f2;">
                                     <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">No</th>
                                     <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Jabatan</th>
@@ -119,7 +119,7 @@
                             </table>
                             <tr>
                                 <td align="left" style="font-size:0px;padding: 10px 20px 0px 20px;word-break:break-word;">
-                                    <table style="border-collapse: collapse; width: 100%; #dddddd;font-size:14px;line-height:16px;table-layout:auto;width:100%;">
+                                    <table style="border-collapse: collapse; width: 100%; #dddddd;font-size:12px;line-height:14px;table-layout:auto;width:100%;">
                                         <tr>
                                             <td style="vertical-align: top; padding:5px; width:60px">Kedua</td>
                                             <td style="vertical-align: top; padding:5px;">:</td>
@@ -148,10 +148,11 @@
                             <table style="width: 100%; background-color: #ffffff;">
                                 <tr>
                                     <td align="left" style="font-size: 0; padding: 10px 20px 10px 20px; word-break: break-word;">
-                                        <div style="font-size: 14px; line-height: 20px; text-align: justify; color: #000000;">
-                                            <p>Ditetapkan di : Jakarta</p>
-                                            <p>Pada Tanggal : {{ $tanggal_sk }}</p>
-                                            <img style="height: 50px" src="{{ $signature }}"/>
+                                        <div style="font-size: 12px; line-height: 14px; text-align: justify; color: #000000;">
+                                            <p style="margin: 0;">Ditetapkan di : Jakarta</p>
+                                            <p style="margin: 0;">Pada Tanggal : {{ $tanggal_sk }}</p>
+                                            <p style="margin-top: 5;">Direktur {{$brand}}</p>
+                                            <img style="height: 50px; margin-top: 5px;" src="{{ $signature }}"/>
                                             <p>{{ $directure }}</p>
                                         </div>
                                     </td>
